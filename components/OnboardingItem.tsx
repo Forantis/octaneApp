@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, useWindowDimensions } from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface OnboardingItemProps {
     id: number;
@@ -16,10 +17,11 @@ export default function OnboardingItem({ item }: { item: OnboardingItemProps }) 
         <View style={[styles.container, { width }]}>
             <View style={styles.imageContainer}>
                 <Image source={item.image} style={[styles.image, { width, resizeMode: 'cover' }]} />
-                <View style={styles.fadeOverlay1} />
-                <View style={styles.fadeOverlay2} />
-                <View style={styles.fadeOverlay3} />
-                <View style={styles.fadeOverlay4} />
+                <LinearGradient
+                    colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)', 'black']}
+                    style={styles.gradient}
+                    locations={[0, 0.3, 0.5, 0.7, 0.85, 1]}
+                />
             </View>
 
             <View style={styles.textContainer}>
@@ -45,51 +47,22 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
-    fadeOverlay1: {
+    gradient: {
         position: 'absolute',
         left: 0,
         right: 0,
         bottom: 0,
-        height: 150,
-        backgroundColor: 'black',
-        opacity: 0.2,
-    },
-    fadeOverlay2: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: 100,
-        backgroundColor: 'black',
-        opacity: 0.4,
-    },
-    fadeOverlay3: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: 50,
-        backgroundColor: 'black',
-        opacity: 0.6,
-    },
-    fadeOverlay4: {
-        position: 'absolute',
-        left: 0,
-        right: 0,
-        bottom: 0,
-        height: 25,
-        backgroundColor: 'black',
-        opacity: 0.8,
+        height: 300, // Hauteur du dégradé augmentée pour une transition plus douce
     },
     textContainer: {
-        height: '40%',
+        height: '35%',
         paddingHorizontal: 30,
         paddingTop: 10,
         alignItems: 'center',
         justifyContent: 'center',
     },
     title: {
-        fontSize: 28, // Taille augmentée
+        fontSize: 27, // Taille augmentée
         fontWeight: 'bold',
         color: 'white',
         marginBottom: 15,
