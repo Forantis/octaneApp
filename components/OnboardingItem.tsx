@@ -1,6 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Image, useWindowDimensions, TouchableOpacity } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { useRouter } from 'expo-router';
+import * as SecureStore from 'expo-secure-store';
 
 interface OnboardingItemProps {
     id: number;
@@ -8,10 +10,29 @@ interface OnboardingItemProps {
     description: string;
     subdescription: string;
     image: any;
+    isLastSlide?: boolean;
 }
 
-export default function OnboardingItem({ item }: { item: OnboardingItemProps }) {
-    const { width, height } = useWindowDimensions();
+export default function OnboardingItem({ item }: Readonly<{ item: OnboardingItemProps }>) {
+    const { width } = useWindowDimensions();
+    const router = useRouter();
+
+    const handleGetStarted = async () => {
+        // Enregistrer que l'onboarding a été complété
+        await storeOnboardingStatus();
+        
+        // Naviguer vers l'écran principal de l'application
+        router.push('/home');
+    };
+
+    const storeOnboardingStatus = async () => {
+        try {
+            await SecureStore.setItemAsync('onboardingCompleted', 'true');
+            console.log('Onboarding status stored successfully');
+        } catch (error) {
+            console.error('Error storing onboarding status:', error);
+        }
+    };
 
     return (
         <View style={[styles.container, { width }]}>
@@ -28,6 +49,12 @@ export default function OnboardingItem({ item }: { item: OnboardingItemProps }) 
                 <Text style={styles.title}>{item.title}</Text>
                 <Text style={styles.description}>{item.description}</Text>
                 <Text style={styles.subdescription}>{item.subdescription}</Text>
+                
+                {item.isLastSlide && (
+                    <TouchableOpacity style={styles.button} onPress={handleGetStarted}>
+                        <Text style={styles.buttonText}>Commencer l'expérience</Text>
+                    </TouchableOpacity>
+                )}
             </View>
         </View>
     )
@@ -52,17 +79,18 @@ const styles = StyleSheet.create({
         left: 0,
         right: 0,
         bottom: 0,
-        height: 300, // Hauteur du dégradé augmentée pour une transition plus douce
+        height: 300,
     },
     textContainer: {
-        height: '35%',
+        height: '35%', // Un peu moins pour laisser de la place aux dots
         paddingHorizontal: 30,
         paddingTop: 10,
+        paddingBottom: 50, // Ajout de padding en bas pour les dots
         alignItems: 'center',
         justifyContent: 'center',
     },
     title: {
-        fontSize: 27, // Taille augmentée
+        fontSize: 30, // Légèrement plus grand comme demandé
         fontWeight: 'bold',
         color: 'white',
         marginBottom: 15,
@@ -77,5 +105,18 @@ const styles = StyleSheet.create({
         fontSize: 14,
         textAlign: 'center',
         color: '#888',
+        marginBottom: 25,
+    },
+    button: {
+        backgroundColor: '#FF4D00', // Couleur orange pour Octane (vous pouvez ajuster)
+        paddingHorizontal: 30,
+        paddingVertical: 15,
+        borderRadius: 30,
+        marginTop: 20,
+    },
+    buttonText: {
+        color: 'white',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
