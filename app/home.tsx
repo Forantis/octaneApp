@@ -1,7 +1,7 @@
 import { Text, View, StyleSheet, Button } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from 'expo-router';
-import { QueryClient, QueryClientProvider,  } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 export default function Home() {
   const router = useRouter();
