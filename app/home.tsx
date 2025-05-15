@@ -1,8 +1,19 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Button } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useRouter } from 'expo-router';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+
+const queryClient = new QueryClient();
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleEnterClick = () => {
+  router.replace('/our-cars');
+  }
+
   return (
+    <QueryClientProvider client={queryClient}>
     <View style={styles.container}>
       <StatusBar style="light" />
       <View style={styles.blueSection} />
@@ -12,6 +23,7 @@ export default function Home() {
         <Text style={styles.subtitle}>Votre expérience automobile commence maintenant</Text>
       </View>
     </View>
+    </QueryClientProvider>
   );
 }
 
