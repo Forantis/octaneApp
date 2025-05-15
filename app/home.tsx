@@ -10,6 +10,7 @@ export default function Home() {
 
   const handleEnterClick = () => {
   router.replace('/our-cars');
+  }
 
   return (
     <QueryClientProvider client={queryClient}>
