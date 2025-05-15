@@ -5,8 +5,12 @@ export default function Home() {
   return (
     <View style={styles.container}>
       <StatusBar style="light" />
-      <Text style={styles.title}>Bienvenue chez Octane</Text>
-      <Text style={styles.subtitle}>Votre expérience automobile commence maintenant</Text>
+      <View style={styles.blueSection} />
+      <View style={styles.whiteSection} />
+      <View style={styles.content}>
+        <Text style={styles.title}>Bienvenue chez Octane</Text>
+        <Text style={styles.subtitle}>Votre expérience automobile commence maintenant</Text>
+      </View>
     </View>
   );
 }
@@ -14,7 +18,22 @@ export default function Home() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "black",
+    flexDirection: "row",
+  },
+  blueSection: {
+    flex: 1.5,
+    backgroundColor: "#354167",
+  },
+  whiteSection: {
+    flex: 2,
+    backgroundColor: "white",
+  },
+  content: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
@@ -22,7 +41,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 24,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
     marginBottom: 20,
   },
   subtitle: {
