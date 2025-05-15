@@ -1,13 +1,28 @@
-import { Text, View, StyleSheet } from "react-native";
+import { Text, View, StyleSheet, Button } from "react-native";
 import { StatusBar } from "expo-status-bar";
+import { useRouter } from 'expo-router';
+import { QueryClient, QueryClientProvider,  } from "@tanstack/react-query";
 
 export default function Home() {
+  const router = useRouter();
+  const queryClient = new QueryClient();
+
+  const handleEnterClick = () => {
+  router.replace('/our-cars');
+  }
+
   return (
+    <QueryClientProvider client={queryClient}>
     <View style={styles.container}>
       <StatusBar style="light" />
       <Text style={styles.title}>Bienvenue chez Octane</Text>
       <Text style={styles.subtitle}>Votre expérience automobile commence maintenant</Text>
+      <Button
+        title={"Explorez nos voitures"}
+        onPress={() => handleEnterClick()}
+      />
     </View>
+    </QueryClientProvider>
   );
 }
 
