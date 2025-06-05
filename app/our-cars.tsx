@@ -1,8 +1,8 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Animated, Text, View, FlatList, Image, StyleSheet, Dimensions } from 'react-native';
+import { Text, View, FlatList, Image, StyleSheet, Dimensions } from 'react-native';
 import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
+import Animated, { FadeInLeft, FadeInRight, FadeOutLeft, FadeOutRight, interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
 
@@ -31,13 +31,8 @@ const styles = StyleSheet.create({
         flex: 1,
         zIndex: 1,
     },
-   /*  container: {
-        flex: 1,
-        backgroundColor: '#f4f4f4',
-    }, */
     header: {
-        /* backgroundColor: '#1c2a48', */
-        paddingVertical: 40,
+        paddingVertical: 20,
         paddingHorizontal: 20,
     },
     headerText: {
@@ -55,9 +50,7 @@ const styles = StyleSheet.create({
     },
     card: {
         width: width * 0.8,
-        /* backgroundColor: '#fff', */
         alignSelf: 'center',
-        marginTop: 10,
         borderRadius: 16,
         overflow: 'hidden',
         shadowColor: '#000',
@@ -70,7 +63,7 @@ const styles = StyleSheet.create({
         height: 180,
     },
     carDetails: {
-        padding: 15,
+        padding: 0,
     },
     carName: {
         fontSize: 20,
@@ -89,13 +82,13 @@ const styles = StyleSheet.create({
     },
     trendingSection: {
         marginTop: 30,
-        paddingHorizontal: 20,
     },
     trendingTitle: {
         fontSize: 22,
         fontWeight: 'bold',
         color: '#FFFFFF',
         marginBottom: 10,
+        marginHorizontal: 20,
     },
     trendingItem: {
         width: 120,
@@ -121,32 +114,22 @@ const styles = StyleSheet.create({
 });
 
 function TrendingItem({ item, isCenter }: { item: any, isCenter: boolean }) {
-    const animatedValue = useRef(new Animated.Value(isCenter ? 1 : 0)).current;
+    const animatedValue = useSharedValue(isCenter ? 1 : 0);
 
     useEffect(() => {
-        Animated.spring(animatedValue, {
-            toValue: isCenter ? 1 : 0,
-            useNativeDriver: true,
-            friction: 6,
-        }).start();
+        animatedValue.value = withSpring(isCenter ? 1 : 0);
     }, [isCenter]);
 
-    const animatedStyle = {
+    const animatedStyle = useAnimatedStyle(() => ({
         transform: [
             {
-                scale: animatedValue.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [1, 1.05],
-                }),
+                scale: interpolate(animatedValue.value, [0, 1],[1, 1.05])
             },
             {
-                translateY: animatedValue.interpolate({
-                    inputRange: [0, 1],
-                    outputRange: [0, -15],
-                }),
+                translateY: interpolate(animatedValue.value, [0, 1],[0, -15])
             },
         ],
-    };
+    }));
 
     return (
         <Animated.View style={[styles.trendingItem, animatedStyle]}>
@@ -163,7 +146,7 @@ function ProgressBar({ length, activeIndex }: { length: number, activeIndex: num
     const progress = (activeIndex + 1) / length;
 
     return (
-        <View style={{ width: 100, alignSelf: 'flex-end' }}>
+        <View style={{ width: 100, alignSelf: 'flex-end',marginRight: 20,}}>
             <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, justifyContent: 'flex-end' }}>
                 <Text style={{ color: '#1c2a48', fontWeight: 'bold', fontSize: 14 }}>
                     {activeIndex + 1} / {length}
@@ -242,18 +225,20 @@ function OurCarsContent() {
 
                 {/* Affichage de la voiture centrale */}
                 <View style={styles.card}>
+                    <Animated.View key={car.id} entering={FadeInRight} exiting={FadeOutLeft}>
                     <Image
                         source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
                         style={styles.carImage}
                         resizeMode="cover"
                     />
+                    </Animated.View>
                     <View style={styles.carDetails}>
                         <Text style={styles.price}>${car.specs?.dailyPrice || 2100} / jour</Text>
                     </View>
                 </View>
 
                 <View style={styles.carousselContainer}>
-                    <Text style={styles.TextLux}>VOITURE</Text>
+                    <Text style={styles.TextLux}>{car.name}</Text>
                 </View>
 
                 <View style={styles.trendingSection}>
