@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import { Text, View, FlatList, Image, StyleSheet, Dimensions } from 'react-native';
 import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import Animated, { FadeInLeft, FadeInRight, FadeOutLeft, FadeOutRight, interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { FadeInRight, FadeOutLeft, interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
 
@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
     left: {
         flex: 1.3,
         backgroundColor: '#1c2a48',
-        /* backgroundColor: '#fff', */
     },
     right: {
         flex: 1.7,
@@ -53,10 +52,6 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         borderRadius: 16,
         overflow: 'hidden',
-        shadowColor: '#000',
-        shadowOpacity: 0.1,
-        shadowRadius: 6,
-        elevation: 5,
     },
     carImage: {
         width: '100%',
@@ -79,6 +74,7 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontWeight: 'bold',
         fontSize: 18,
+        marginBottom: 10,
     },
     trendingSection: {
         marginTop: 30,
@@ -93,13 +89,20 @@ const styles = StyleSheet.create({
     trendingItem: {
         width: 120,
         height: 80,
-        /* borderRadius: 8, */
         backgroundColor: '#F3F3F3',
         marginTop: 25,
         marginRight: 10,
         overflow: 'hidden',
     },
-    TextLux: {
+    TextLuxeSmall: {
+        fontSize: 40,
+        fontWeight: 'bold',
+        color: '#F23557',
+        marginTop: 30,
+        marginLeft: 20,
+        width: '100%',
+    },
+    TextLuxeBig: {
         fontSize: 60,
         fontWeight: 'bold',
         color: '#F23557',
@@ -194,7 +197,17 @@ function OurCarsContent() {
         );
     }
 
-    const cars = data.cars || [];
+    interface Car {
+        id: string;
+        name: string;
+        image: string;
+        specs?: {
+            dailyPrice?: number;
+        };
+    }
+
+
+    const cars : Car[] = data.cars ?? [];
     const ITEM_WIDTH = 120 + 10;
 
     const handleScroll = (event: any) => {
@@ -233,12 +246,16 @@ function OurCarsContent() {
                     />
                     </Animated.View>
                     <View style={styles.carDetails}>
-                        <Text style={styles.price}>${car.specs?.dailyPrice || 2100} / jour</Text>
+                        <Text style={styles.price}>${car.specs?.dailyPrice ?? 2100} / jour</Text>
                     </View>
                 </View>
 
                 <View style={styles.carousselContainer}>
-                    <Text style={styles.TextLux}>{car.name}</Text>
+                    {car.name.length > 14 ? (
+                        <Text style={styles.TextLuxeSmall}>{car.name}</Text>
+                    ) : (
+                        <Text style={styles.TextLuxeBig}>{car.name}</Text>
+                    )}
                 </View>
 
                 <View style={styles.trendingSection}>
