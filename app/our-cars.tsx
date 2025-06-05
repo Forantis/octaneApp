@@ -1,9 +1,7 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { Animated } from 'react-native';
-import { Text, View, FlatList, Image, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { Animated, Text, View, FlatList, Image, StyleSheet, Dimensions } from 'react-native';
 import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-
 
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
@@ -75,14 +73,14 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: 'bold',
         color: '#1c2a48',
-        marginBottom: 15,
+        marginBottom: 10,
     },
     trendingItem: {
         width: 120,
         height: 80,
         borderRadius: 8,
         backgroundColor: '#fff',
-        marginTop: 15,
+        marginTop: 25,
         marginRight: 10,
         overflow: 'hidden',
     },
@@ -102,23 +100,51 @@ const styles = StyleSheet.create({
     },
 });
 
+function TrendingItem({ item, isCenter }) {
+    const animatedValue = useRef(new Animated.Value(isCenter ? 1 : 0)).current;
+
+    useEffect(() => {
+        Animated.spring(animatedValue, {
+            toValue: isCenter ? 1 : 0,
+            useNativeDriver: true,
+            friction: 6,
+        }).start();
+    }, [isCenter]);
+
+    const animatedStyle = {
+        transform: [
+            {
+                scale: animatedValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 1.15],
+                }),
+            },
+            {
+                translateY: animatedValue.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [0, -15],
+                }),
+            },
+        ],
+        borderWidth: isCenter ? 2 : 0,
+        borderColor: isCenter ? '#1c2a48' : 'transparent',
+    };
+
+    return (
+        <Animated.View style={[styles.trendingItem, animatedStyle]}>
+            <Image
+                source={{ uri: `https://octaneserver.onrender.com/assets/${item.image}` }}
+                style={styles.trendingImage}
+                resizeMode="cover"
+            />
+        </Animated.View>
+    );
+}
+
 function OurCarsContent() {
     const { data, isLoading } = useGetCars();
     const [centerIndex, setCenterIndex] = useState(0);
     const trendingRef = useRef(null);
-
-    // Valeur animée pour l'item central
-    const animatedValue = useRef(new Animated.Value(0)).current;
-
-    useEffect(() => {
-        Animated.spring(animatedValue, {
-            toValue: 1,
-            useNativeDriver: true,
-            friction: 6,
-        }).start(() => {
-            animatedValue.setValue(0); // reset pour la prochaine animation
-        });
-    }, [centerIndex]);
 
     if (isLoading || !data) {
         return (
@@ -135,10 +161,9 @@ function OurCarsContent() {
     }
 
     const cars = data.cars || [];
-
     const ITEM_WIDTH = 120 + 10;
 
-    const handleScroll = (event : any) => {
+    const handleScroll = (event: any) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / ITEM_WIDTH);
         setCenterIndex(index);
@@ -153,7 +178,7 @@ function OurCarsContent() {
                 <Text style={styles.subText}>Explorez notre sélection de voitures</Text>
             </View>
 
-           {/* Affichage de la voiture centrale */}
+            {/* Affichage de la voiture centrale */}
             <View style={styles.card}>
                 <Image
                     source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
@@ -169,7 +194,7 @@ function OurCarsContent() {
             </View>
 
             <View style={styles.trendingSection}>
-                <Text style={styles.trendingTitle}>Touts nos voitures</Text>
+                <Text style={styles.trendingTitle}>Nos voitures</Text>
                 <FlatList
                     ref={trendingRef}
                     data={cars}
@@ -179,23 +204,9 @@ function OurCarsContent() {
                     snapToInterval={ITEM_WIDTH}
                     decelerationRate="fast"
                     onMomentumScrollEnd={handleScroll}
-                    renderItem={({ item, index }) => {
-                        const isCenter = index === centerIndex;
-
-                        return (
-                            <Animated.View
-                                style={[
-                                    isCenter ? styles.trendingItemCenter : styles.trendingItem,
-                                ]}
-                            >
-                                <Image
-                                    source={{ uri: `https://octaneserver.onrender.com/assets/${item.image}` }}
-                                    style={styles.trendingImage}
-                                    resizeMode="cover"
-                                />
-                            </Animated.View>
-                        );
-                    }}
+                    renderItem={({ item, index }) => (
+                        <TrendingItem item={item} isCenter={index === centerIndex} />
+                    )}
                     contentContainerStyle={{ paddingHorizontal: (width - 120) / 2 }}
                 />
             </View>
