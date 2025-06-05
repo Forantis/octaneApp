@@ -18,6 +18,7 @@ export default function Index() {
         if (status === 'true') {
           // Si l'onboarding est complété, rediriger vers home
           router.replace('/home');
+          console.log('Onboarding already completed, redirecting to home');
         } else {
           // Sinon, afficher l'onboarding
           setOnboardingCompleted(false);

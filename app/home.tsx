@@ -2,6 +2,7 @@ import { Text, View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { StatusBar } from "expo-status-bar";
 import { useRouter } from 'expo-router';
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { resetOnboarding } from "@/utils/resetOnboarding"; 
 
 const queryClient = new QueryClient();
 
@@ -26,7 +27,7 @@ export default function Home() {
         <TouchableOpacity style={styles.button} onPress={() => handleEnterClick()} >
           <Text style={styles.buttonText}>Se connecter</Text>
         </TouchableOpacity>
-                <TouchableOpacity style={styles.button} onPress={() => handleEnterClick()} >
+                <TouchableOpacity style={styles.button} onPress={() => resetOnboarding()} >
           <Text style={styles.buttonText}>S'inscrire</Text>
         </TouchableOpacity>
       </View>

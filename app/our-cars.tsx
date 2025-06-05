@@ -7,12 +7,36 @@ const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
 
 const styles = StyleSheet.create({
+    background: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        flexDirection: 'row',
+        width: '100%',
+        height: '100%',
+        zIndex: 0,
+    },
+    left: {
+        flex: 1.3,
+        backgroundColor: '#1c2a48',
+        /* backgroundColor: '#fff', */
+    },
+    right: {
+        flex: 1.7,
+        backgroundColor: '#fff',
+    },
     container: {
         flex: 1,
-        backgroundColor: '#f4f4f4',
+        zIndex: 1,
     },
+   /*  container: {
+        flex: 1,
+        backgroundColor: '#f4f4f4',
+    }, */
     header: {
-        backgroundColor: '#1c2a48',
+        /* backgroundColor: '#1c2a48', */
         paddingVertical: 40,
         paddingHorizontal: 20,
     },
@@ -31,10 +55,9 @@ const styles = StyleSheet.create({
     },
     card: {
         width: width * 0.8,
-        backgroundColor: '#fff',
+        /* backgroundColor: '#fff', */
         alignSelf: 'center',
-        paddingTop: 15,
-        marginTop: 20,
+        marginTop: 10,
         borderRadius: 16,
         overflow: 'hidden',
         shadowColor: '#000',
@@ -60,7 +83,7 @@ const styles = StyleSheet.create({
         marginTop: 4,
     },
     price: {
-        color: '#1c2a48',
+        color: '#FFFFFF',
         fontWeight: 'bold',
         fontSize: 18,
         marginTop: 10,
@@ -72,27 +95,25 @@ const styles = StyleSheet.create({
     trendingTitle: {
         fontSize: 22,
         fontWeight: 'bold',
-        color: '#1c2a48',
+        color: '#FFFFFF',
         marginBottom: 10,
     },
     trendingItem: {
         width: 120,
         height: 80,
-        borderRadius: 8,
-        backgroundColor: '#fff',
+        /* borderRadius: 8, */
+        backgroundColor: '#F3F3F3',
         marginTop: 25,
         marginRight: 10,
         overflow: 'hidden',
     },
-    trendingItemCenter: {
-        width: 120,
-        height: 80,
-        borderRadius: 8,
-        backgroundColor: '#fff',
-        marginTop: 15,
-        marginRight: 10,
-        overflow: 'hidden',
-        transform: [{ translateY: -15 }],
+    TextLux: {
+        fontSize: 60,
+        fontWeight: 'bold',
+        color: '#F23557',
+        marginTop: 30,
+        marginLeft: 20,
+        width: '100%',
     },
     trendingImage: {
         width: '100%',
@@ -100,7 +121,7 @@ const styles = StyleSheet.create({
     },
 });
 
-function TrendingItem({ item, isCenter }) {
+function TrendingItem({ item, isCenter }: { item: any, isCenter: boolean }) {
     const animatedValue = useRef(new Animated.Value(isCenter ? 1 : 0)).current;
 
     useEffect(() => {
@@ -116,7 +137,7 @@ function TrendingItem({ item, isCenter }) {
             {
                 scale: animatedValue.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 1.15],
+                    outputRange: [1, 1.05],
                 }),
             },
             {
@@ -126,8 +147,6 @@ function TrendingItem({ item, isCenter }) {
                 }),
             },
         ],
-        borderWidth: isCenter ? 2 : 0,
-        borderColor: isCenter ? '#1c2a48' : 'transparent',
     };
 
     return (
@@ -141,6 +160,35 @@ function TrendingItem({ item, isCenter }) {
     );
 }
 
+function ProgressBar({ length, activeIndex }: { length: number, activeIndex: number }) {
+    const progress = (activeIndex + 1) / length;
+
+    return (
+        <View style={{ width: 100, alignSelf: 'flex-end' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, justifyContent: 'flex-end' }}>
+                <Text style={{ color: '#1c2a48', fontWeight: 'bold', fontSize: 14 }}>
+                    {activeIndex + 1} / {length}
+                </Text>
+            </View>
+            <View style={{
+                height: 8,
+                backgroundColor: '#eee',
+                borderRadius: 4,
+                overflow: 'hidden',
+            }}>
+                <Animated.View
+                    style={{
+                        height: 8,
+                        backgroundColor: '#1c2a48',
+                        width: `${progress * 100}%`,
+                        borderRadius: 4,
+                    }}
+                />
+            </View>
+        </View>
+    );
+}
+
 function OurCarsContent() {
     const { data, isLoading } = useGetCars();
     const [centerIndex, setCenterIndex] = useState(0);
@@ -148,10 +196,14 @@ function OurCarsContent() {
 
     if (isLoading || !data) {
         return (
+            
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Text style={styles.headerText}>Nos Voitures</Text>
-                    <Text style={styles.subText}>Explorez notre sélection de voitures</Text>
+                    <Image 
+                        source={require('../assets/images/octaneLogo.png')}
+                        style={{ width: 150, height: 150 }}
+                        resizeMode="contain"
+                    />
                 </View>
                 <View style={{ alignItems: 'center', marginTop: 50 }}>
                     <Text style={{ color: '#1c2a48', fontSize: 16 }}>Chargement...</Text>
@@ -172,43 +224,58 @@ function OurCarsContent() {
     const car = cars[centerIndex] || cars[0];
 
     return (
-        <View style={styles.container}>
-            <View style={styles.header}>
-                <Text style={styles.headerText}>Nos Voitures</Text>
-                <Text style={styles.subText}>Explorez notre sélection de voitures</Text>
+        <View style={{ flex: 1 }}>
+            {/* FOND BLEU/BLANC */}
+            <View style={styles.background}>
+                <View style={styles.left} />
+                <View style={styles.right} />
             </View>
 
-            {/* Affichage de la voiture centrale */}
-            <View style={styles.card}>
-                <Image
-                    source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
-                    style={styles.carImage}
-                    resizeMode="cover"
-                />
-                <View style={styles.carDetails}>
-                    <Text style={styles.carName}>{car.name}</Text>
-                    <Text style={styles.carSpec}>Puissance: {car.specs?.power || "N/A"} ch</Text>
-                    <Text style={styles.carSpec}>Vitesse max: {car.specs?.topSpeed || "N/A"} km/h</Text>
-                    <Text style={styles.price}>${car.pricePerDay || 2100} / jour</Text>
+            {/* CONTENU */}
+            <View style={[styles.container, { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }]}>
+                <View style={styles.header}>
+                    <Image
+                        source={require('../assets/images/octaneLogo.png')}
+                        style={{ width: 150, height: 150 }}
+                        resizeMode="contain"
+                    />
                 </View>
-            </View>
 
-            <View style={styles.trendingSection}>
-                <Text style={styles.trendingTitle}>Nos voitures</Text>
-                <FlatList
-                    ref={trendingRef}
-                    data={cars}
-                    horizontal
-                    keyExtractor={(item) => `trend-${item.id}`}
-                    showsHorizontalScrollIndicator={false}
-                    snapToInterval={ITEM_WIDTH}
-                    decelerationRate="fast"
-                    onMomentumScrollEnd={handleScroll}
-                    renderItem={({ item, index }) => (
-                        <TrendingItem item={item} isCenter={index === centerIndex} />
-                    )}
-                    contentContainerStyle={{ paddingHorizontal: (width - 120) / 2 }}
-                />
+                {/* Affichage de la voiture centrale */}
+                <View style={styles.card}>
+                    <Image
+                        source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
+                        style={styles.carImage}
+                        resizeMode="cover"
+                    />
+                    <View style={styles.carDetails}>
+                        <Text style={styles.price}>${car.specs?.dailyPrice || 2100} / jour</Text>
+                    </View>
+                </View>
+
+                <View style={styles.carousselContainer}>
+                    <Text style={styles.TextLux}>VOITURE</Text>
+                </View>
+
+                <View style={styles.trendingSection}>
+                    <Text style={styles.trendingTitle}>Nos voitures</Text>
+                    <ProgressBar length={cars.length} activeIndex={centerIndex} 
+                    />
+                    <FlatList
+                        ref={trendingRef}
+                        data={cars}
+                        horizontal
+                        keyExtractor={(item) => `trend-${item.id}`}
+                        showsHorizontalScrollIndicator={false}
+                        snapToInterval={ITEM_WIDTH}
+                        decelerationRate="fast"
+                        onMomentumScrollEnd={handleScroll}
+                        renderItem={({ item, index }) => (
+                            <TrendingItem item={item} isCenter={index === centerIndex} />
+                        )}
+                        contentContainerStyle={{ paddingHorizontal: (width - 120) / 2 }}
+                    />
+                </View>
             </View>
         </View>
     );
