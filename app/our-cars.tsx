@@ -31,21 +31,12 @@ const styles = StyleSheet.create({
         zIndex: 1,
     },
     header: {
-        paddingVertical: 20,
         paddingHorizontal: 20,
     },
     headerText: {
         color: 'white',
         fontSize: 28,
         fontWeight: 'bold',
-    },
-    subText: {
-        color: '#ccc',
-        fontSize: 16,
-        marginTop: 4,
-    },
-    carousselContainer: {
-        marginTop: -30,
     },
     card: {
         width: width * 0.8,
@@ -54,21 +45,9 @@ const styles = StyleSheet.create({
         overflow: 'hidden',
     },
     carImage: {
+        marginTop: 40,
         width: '100%',
         height: 180,
-    },
-    carDetails: {
-        padding: 0,
-    },
-    carName: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#1c2a48',
-    },
-    carSpec: {
-        color: '#666',
-        fontSize: 14,
-        marginTop: 4,
     },
     price: {
         color: '#FFFFFF',
@@ -77,6 +56,8 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     trendingSection: {
+        position: 'absolute',
+        bottom: 60,
         marginTop: 30,
     },
     trendingTitle: {
@@ -245,12 +226,12 @@ function OurCarsContent() {
                         resizeMode="cover"
                     />
                     </Animated.View>
-                    <View style={styles.carDetails}>
+                    <View>
                         <Text style={styles.price}>${car.specs?.dailyPrice ?? 2100} / jour</Text>
                     </View>
                 </View>
 
-                <View style={styles.carousselContainer}>
+                <View>
                     {car.name.length > 14 ? (
                         <Text style={styles.TextLuxeSmall}>{car.name}</Text>
                     ) : (
