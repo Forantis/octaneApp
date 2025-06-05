@@ -86,7 +86,6 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontWeight: 'bold',
         fontSize: 18,
-        marginTop: 10,
     },
     trendingSection: {
         marginTop: 30,
