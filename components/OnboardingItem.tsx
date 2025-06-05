@@ -39,7 +39,7 @@ export default function OnboardingItem({ item }: Readonly<{ item: OnboardingItem
             <View style={styles.imageContainer}>
                 <Image source={item.image} style={[styles.image, { width, resizeMode: 'cover' }]} />
                 <LinearGradient
-                    colors={['transparent', 'rgba(0,0,0,0.2)', 'rgba(0,0,0,0.4)', 'rgba(0,0,0,0.6)', 'rgba(0,0,0,0.8)', 'black']}
+                    colors={['transparent', 'rgba(53,65,103,0.08)', 'rgba(53,65,103,0.15)', 'rgba(53,65,103,0.3)', 'rgba(53,65,103,0.6)', 'rgba(53,65,103,1)']}
                     style={styles.gradient}
                     locations={[0, 0.3, 0.5, 0.7, 0.85, 1]}
                 />
@@ -63,7 +63,7 @@ export default function OnboardingItem({ item }: Readonly<{ item: OnboardingItem
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: 'black',
+        backgroundColor: '#354167',
         flexDirection: 'column',
     },
     imageContainer: {
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
         marginBottom: 25,
     },
     button: {
-        backgroundColor: '#FF4D00', // Couleur orange pour Octane (vous pouvez ajuster)
+        backgroundColor: '#EE3557', // Couleur rouge pour Octane (vous pouvez ajuster)
         paddingHorizontal: 30,
         paddingVertical: 15,
         borderRadius: 30,
