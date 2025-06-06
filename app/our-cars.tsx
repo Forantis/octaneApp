@@ -1,3 +1,6 @@
+import CarListItem from '@/components/CarListItem';
+import ProgressBar from '@/components/ProgressBar';
+import CarDetailsView from '@/components/CarDetailsView';
 import CarPriceAnimated from '@/components/CarPriceAnimated';
 import CarNameAnimated from '@/components/CarNameAnimated';
 import CarListItem from '@/components/CarListItem';
@@ -6,8 +9,9 @@ import CarModel from '@/interfaces/carInterface';
 import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInRight, FadeOutLeft, FadeInLeft, FadeOutRight } from 'react-native-reanimated';
+
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
 
@@ -37,11 +41,6 @@ const styles = StyleSheet.create({
     },
     header: {
         paddingHorizontal: 20,
-    },
-    headerText: {
-        color: 'white',
-        fontSize: 28,
-        fontWeight: 'bold',
     },
     card: {
         width: width * 0.8,
@@ -77,15 +76,16 @@ const styles = StyleSheet.create({
 function OurCarsContent() {
     const { data, isLoading } = useGetCars();
     const [centerIndex, setCenterIndex] = useState(0);
+    const [selectedCar, setSelectedCar] = useState(null);
     const [oldIndex, setOldIndex] = useState(0);
+
     const trendingRef = useRef(null);
 
     if (isLoading || !data) {
         return (
-            
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Image 
+                    <Image
                         source={require('../assets/images/octaneLogo.png')}
                         style={{ width: 200, height: 200, marginTop: 50 }}
                         resizeMode="contain"
@@ -98,7 +98,7 @@ function OurCarsContent() {
         );
     }
 
-    const cars : CarModel[] = data.cars ?? [];
+    const cars = data.cars ?? [];
     const ITEM_WIDTH = 120 + 10;
 
     const handleScroll = (event: any) => {
@@ -112,6 +112,10 @@ function OurCarsContent() {
     };
 
     const car = cars[centerIndex] || cars[0];
+
+    const openDetails = (car: any) => {
+        setSelectedCar(car);
+    };
 
     return (
         <View style={{ flex: 1 }}>
@@ -132,7 +136,9 @@ function OurCarsContent() {
                 </View>
 
                 {/* Affichage de la voiture centrale */}
-                <View style={styles.card}>
+
+                <TouchableOpacity style={styles.card} onPress={() => openDetails(car)}>
+                   <View style={styles.card}>
                     <Animated.View key={car.id} entering={centerIndex >= oldIndex ? FadeInRight : FadeInLeft} exiting={centerIndex >= oldIndex ? FadeOutLeft : FadeOutRight}>
                     <Image
                         source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
@@ -141,14 +147,14 @@ function OurCarsContent() {
                     />
                     </Animated.View>
                     <CarPriceAnimated price={car.specs?.dailyPrice ?? 2100} stylePrice={styles.price} />
-                </View>
+                  </View>
+                </TouchableOpacity>
 
                 <CarNameAnimated name={car.name} />
 
                 <View style={styles.trendingSection}>
                     <Text style={styles.trendingTitle}>Nos voitures</Text>
-                    <ProgressBar length={cars.length} activeIndex={centerIndex} 
-                    />
+                    <ProgressBar length={cars.length} activeIndex={centerIndex} />
                     <FlatList
                         ref={trendingRef}
                         data={cars}
@@ -165,6 +171,12 @@ function OurCarsContent() {
                     />
                 </View>
             </View>
+            { selectedCar && (
+                <CarDetailsView
+                    car={selectedCar}
+                    onClose={() => setSelectedCar(null)}
+                />  
+            )}
         </View>
     );
 }
