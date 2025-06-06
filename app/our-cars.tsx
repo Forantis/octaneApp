@@ -1,11 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { useGetCars } from '@/query/cars';
 import CarListItem from '@/components/CarListItem';
 import ProgressBar from '@/components/ProgressBar';
 import CarDetailsView from '@/components/CarDetailsView';
+import CarPriceAnimated from '@/components/CarPriceAnimated';
+import CarNameAnimated from '@/components/CarNameAnimated';
+import CarListItem from '@/components/CarListItem';
+import ProgressBar from '@/components/ProgressBar';
+import CarModel from '@/interfaces/carInterface';
+import { useGetCars } from '@/query/cars';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { useRef, useState } from 'react';
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { FadeInRight, FadeOutLeft, FadeInLeft, FadeOutRight } from 'react-native-reanimated';
 
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
@@ -66,28 +71,14 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginHorizontal: 20,
     },
-    TextLuxeSmall: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        color: '#F23557',
-        marginTop: 30,
-        marginLeft: 20,
-        width: '100%',
-    },
-    TextLuxeBig: {
-        fontSize: 60,
-        fontWeight: 'bold',
-        color: '#F23557',
-        marginTop: 30,
-        marginLeft: 20,
-        width: '100%',
-    },
 });
 
 function OurCarsContent() {
     const { data, isLoading } = useGetCars();
     const [centerIndex, setCenterIndex] = useState(0);
     const [selectedCar, setSelectedCar] = useState(null);
+    const [oldIndex, setOldIndex] = useState(0);
+
     const trendingRef = useRef(null);
 
     if (isLoading || !data) {
@@ -96,12 +87,12 @@ function OurCarsContent() {
                 <View style={styles.header}>
                     <Image
                         source={require('../assets/images/octaneLogo.png')}
-                        style={{ width: 150, height: 150 }}
+                        style={{ width: 200, height: 200, marginTop: 50 }}
                         resizeMode="contain"
                     />
                 </View>
                 <View style={{ alignItems: 'center', marginTop: 50 }}>
-                    <Text style={{ color: '#1c2a48', fontSize: 16 }}>Chargement...</Text>
+                    <Text style={{ color: '#ffffff', fontSize: 16 }}>Chargement...</Text>
                 </View>
             </View>
         );
@@ -113,6 +104,10 @@ function OurCarsContent() {
     const handleScroll = (event: any) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / ITEM_WIDTH);
+        if (index === centerIndex || index < 0 || index >= cars.length) {
+            return;
+        }    
+        setOldIndex(centerIndex);
         setCenterIndex(index);
     };
 
@@ -141,26 +136,21 @@ function OurCarsContent() {
                 </View>
 
                 {/* Affichage de la voiture centrale */}
+
                 <TouchableOpacity style={styles.card} onPress={() => openDetails(car)}>
-                    <Animated.View key={car.id} entering={FadeInRight} exiting={FadeOutLeft}>
-                        <Image
-                            source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
-                            style={styles.carImage}
-                            resizeMode="cover"
-                        />
+                   <View style={styles.card}>
+                    <Animated.View key={car.id} entering={centerIndex >= oldIndex ? FadeInRight : FadeInLeft} exiting={centerIndex >= oldIndex ? FadeOutLeft : FadeOutRight}>
+                    <Image
+                        source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
+                        style={styles.carImage}
+                        resizeMode="cover"
+                    />
                     </Animated.View>
-                    <View>
-                        <Text style={styles.price}>${car.specs?.dailyPrice ?? 2100} / jour</Text>
-                    </View>
+                    <CarPriceAnimated price={car.specs?.dailyPrice ?? 2100} stylePrice={styles.price} />
+                  </View>
                 </TouchableOpacity>
 
-                <View>
-                    {car.name.length > 14 ? (
-                        <Text style={styles.TextLuxeSmall}>{car.name}</Text>
-                    ) : (
-                        <Text style={styles.TextLuxeBig}>{car.name}</Text>
-                    )}
-                </View>
+                <CarNameAnimated name={car.name} />
 
                 <View style={styles.trendingSection}>
                     <Text style={styles.trendingTitle}>Nos voitures</Text>
