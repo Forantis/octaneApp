@@ -1,7 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
-import { Text, View, FlatList, Image, StyleSheet, Dimensions } from 'react-native';
+import CarListItem from '@/components/CarListItem';
+import ProgressBar from '@/components/ProgressBar';
+import CarModel from '@/interfaces/carInterface';
 import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { useEffect, useRef, useState } from 'react';
+import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
 import Animated, { FadeInRight, FadeOutLeft, interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
@@ -67,14 +70,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginHorizontal: 20,
     },
-    trendingItem: {
-        width: 120,
-        height: 80,
-        backgroundColor: '#F3F3F3',
-        marginTop: 25,
-        marginRight: 10,
-        overflow: 'hidden',
-    },
     TextLuxeSmall: {
         fontSize: 40,
         fontWeight: 'bold',
@@ -91,69 +86,7 @@ const styles = StyleSheet.create({
         marginLeft: 20,
         width: '100%',
     },
-    trendingImage: {
-        width: '100%',
-        height: '100%',
-    },
 });
-
-function TrendingItem({ item, isCenter }: { item: any, isCenter: boolean }) {
-    const animatedValue = useSharedValue(isCenter ? 1 : 0);
-
-    useEffect(() => {
-        animatedValue.value = withSpring(isCenter ? 1 : 0);
-    }, [isCenter]);
-
-    const animatedStyle = useAnimatedStyle(() => ({
-        transform: [
-            {
-                scale: interpolate(animatedValue.value, [0, 1],[1, 1.05])
-            },
-            {
-                translateY: interpolate(animatedValue.value, [0, 1],[0, -15])
-            },
-        ],
-    }));
-
-    return (
-        <Animated.View style={[styles.trendingItem, animatedStyle]}>
-            <Image
-                source={{ uri: `https://octaneserver.onrender.com/assets/${item.image}` }}
-                style={styles.trendingImage}
-                resizeMode="cover"
-            />
-        </Animated.View>
-    );
-}
-
-function ProgressBar({ length, activeIndex }: { length: number, activeIndex: number }) {
-    const progress = (activeIndex + 1) / length;
-
-    return (
-        <View style={{ width: 100, alignSelf: 'flex-end',marginRight: 20,}}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 4, justifyContent: 'flex-end' }}>
-                <Text style={{ color: '#1c2a48', fontWeight: 'bold', fontSize: 14 }}>
-                    {activeIndex + 1} / {length}
-                </Text>
-            </View>
-            <View style={{
-                height: 8,
-                backgroundColor: '#eee',
-                borderRadius: 4,
-                overflow: 'hidden',
-            }}>
-                <Animated.View
-                    style={{
-                        height: 8,
-                        backgroundColor: '#1c2a48',
-                        width: `${progress * 100}%`,
-                        borderRadius: 4,
-                    }}
-                />
-            </View>
-        </View>
-    );
-}
 
 function OurCarsContent() {
     const { data, isLoading } = useGetCars();
@@ -178,17 +111,7 @@ function OurCarsContent() {
         );
     }
 
-    interface Car {
-        id: string;
-        name: string;
-        image: string;
-        specs?: {
-            dailyPrice?: number;
-        };
-    }
-
-
-    const cars : Car[] = data.cars ?? [];
+    const cars : CarModel[] = data.cars ?? [];
     const ITEM_WIDTH = 120 + 10;
 
     const handleScroll = (event: any) => {
@@ -253,7 +176,7 @@ function OurCarsContent() {
                         decelerationRate="fast"
                         onMomentumScrollEnd={handleScroll}
                         renderItem={({ item, index }) => (
-                            <TrendingItem item={item} isCenter={index === centerIndex} />
+                            <CarListItem carItem={item} isCenter={index === centerIndex} />
                         )}
                         contentContainerStyle={{ paddingHorizontal: (width - 120) / 2 }}
                     />
