@@ -3,8 +3,6 @@ import ProgressBar from '@/components/ProgressBar';
 import CarDetailsView from '@/components/CarDetailsView';
 import CarPriceAnimated from '@/components/CarPriceAnimated';
 import CarNameAnimated from '@/components/CarNameAnimated';
-import CarListItem from '@/components/CarListItem';
-import ProgressBar from '@/components/ProgressBar';
 import CarModel from '@/interfaces/carInterface';
 import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
