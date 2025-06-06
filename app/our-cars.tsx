@@ -1,11 +1,12 @@
+import React, { useEffect, useRef, useState } from 'react';
+import { Dimensions, FlatList, Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Animated, { FadeInRight, FadeOutLeft } from 'react-native-reanimated';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { useGetCars } from '@/query/cars';
 import CarListItem from '@/components/CarListItem';
 import ProgressBar from '@/components/ProgressBar';
-import CarModel from '@/interfaces/carInterface';
-import { useGetCars } from '@/query/cars';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { useEffect, useRef, useState } from 'react';
-import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft, interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import CarDetailsView from '@/components/CarDetailsView';
+
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
 
@@ -35,11 +36,6 @@ const styles = StyleSheet.create({
     },
     header: {
         paddingHorizontal: 20,
-    },
-    headerText: {
-        color: 'white',
-        fontSize: 28,
-        fontWeight: 'bold',
     },
     card: {
         width: width * 0.8,
@@ -91,14 +87,14 @@ const styles = StyleSheet.create({
 function OurCarsContent() {
     const { data, isLoading } = useGetCars();
     const [centerIndex, setCenterIndex] = useState(0);
+    const [selectedCar, setSelectedCar] = useState(null);
     const trendingRef = useRef(null);
 
     if (isLoading || !data) {
         return (
-            
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Image 
+                    <Image
                         source={require('../assets/images/octaneLogo.png')}
                         style={{ width: 150, height: 150 }}
                         resizeMode="contain"
@@ -111,7 +107,7 @@ function OurCarsContent() {
         );
     }
 
-    const cars : CarModel[] = data.cars ?? [];
+    const cars = data.cars ?? [];
     const ITEM_WIDTH = 120 + 10;
 
     const handleScroll = (event: any) => {
@@ -121,6 +117,10 @@ function OurCarsContent() {
     };
 
     const car = cars[centerIndex] || cars[0];
+
+    const openDetails = (car: any) => {
+        setSelectedCar(car);
+    };
 
     return (
         <View style={{ flex: 1 }}>
@@ -141,18 +141,18 @@ function OurCarsContent() {
                 </View>
 
                 {/* Affichage de la voiture centrale */}
-                <View style={styles.card}>
+                <TouchableOpacity style={styles.card} onPress={() => openDetails(car)}>
                     <Animated.View key={car.id} entering={FadeInRight} exiting={FadeOutLeft}>
-                    <Image
-                        source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
-                        style={styles.carImage}
-                        resizeMode="cover"
-                    />
+                        <Image
+                            source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
+                            style={styles.carImage}
+                            resizeMode="cover"
+                        />
                     </Animated.View>
                     <View>
                         <Text style={styles.price}>${car.specs?.dailyPrice ?? 2100} / jour</Text>
                     </View>
-                </View>
+                </TouchableOpacity>
 
                 <View>
                     {car.name.length > 14 ? (
@@ -164,8 +164,7 @@ function OurCarsContent() {
 
                 <View style={styles.trendingSection}>
                     <Text style={styles.trendingTitle}>Nos voitures</Text>
-                    <ProgressBar length={cars.length} activeIndex={centerIndex} 
-                    />
+                    <ProgressBar length={cars.length} activeIndex={centerIndex} />
                     <FlatList
                         ref={trendingRef}
                         data={cars}
@@ -182,6 +181,12 @@ function OurCarsContent() {
                     />
                 </View>
             </View>
+            { selectedCar && (
+                <CarDetailsView
+                    car={selectedCar}
+                    onClose={() => setSelectedCar(null)}
+                />  
+            )}
         </View>
     );
 }

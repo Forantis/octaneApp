@@ -3,6 +3,11 @@ export default interface CarModel {
     name: string;
     image: string;
     specs?: {
+        topSpeed?: number;
+        acceleration?: number;
+        power?: number;
+        motorSize?: number;
+        wheelDrive?: string;
         dailyPrice?: number;
     };
 }
