@@ -6,7 +6,7 @@ import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft, FadeInUp, FadeOutDown } from 'react-native-reanimated';
+import Animated, { FadeInRight, FadeOutLeft, FadeInLeft, FadeOutRight } from 'react-native-reanimated';
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
 
@@ -76,6 +76,7 @@ const styles = StyleSheet.create({
 function OurCarsContent() {
     const { data, isLoading } = useGetCars();
     const [centerIndex, setCenterIndex] = useState(0);
+    const [oldIndex, setOldIndex] = useState(0);
     const trendingRef = useRef(null);
 
     if (isLoading || !data) {
@@ -102,6 +103,10 @@ function OurCarsContent() {
     const handleScroll = (event: any) => {
         const offsetX = event.nativeEvent.contentOffset.x;
         const index = Math.round(offsetX / ITEM_WIDTH);
+        if (index === centerIndex || index < 0 || index >= cars.length) {
+            return;
+        }    
+        setOldIndex(centerIndex);
         setCenterIndex(index);
     };
 
@@ -127,15 +132,16 @@ function OurCarsContent() {
 
                 {/* Affichage de la voiture centrale */}
                 <View style={styles.card}>
-                    <Animated.View key={car.id} entering={FadeInRight} exiting={FadeOutLeft}>
+                    <Animated.View key={car.id} entering={centerIndex >= oldIndex ? FadeInRight : FadeInLeft} exiting={centerIndex >= oldIndex ? FadeOutLeft : FadeOutRight}>
                     <Image
                         source={{ uri: `https://octaneserver.onrender.com/assets/${car.image}` }}
                         style={styles.carImage}
                         resizeMode="cover"
                     />
                     </Animated.View>
-                    <View>
-                        <Text style={styles.price}>${car.specs?.dailyPrice ?? 2100} / jour</Text>
+                    <View style={{ flexDirection: 'row' }}>
+                        <Text style={styles.price}>${car.specs?.dailyPrice ?? 2100}</Text>
+                        <Text style={{ color: '#ccc', fontSize: 16, marginLeft: 4, marginTop: 3 }}>/ jour</Text>
                     </View>
                 </View>
 
