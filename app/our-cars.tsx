@@ -96,7 +96,7 @@ function OurCarsContent() {
         );
     }
 
-    const cars = data.cars ?? [];
+    const cars : CarModel[] = data.cars ?? [];
     const ITEM_WIDTH = 120 + 10;
 
     const handleScroll = (event: any) => {
