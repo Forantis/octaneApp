@@ -1,11 +1,12 @@
+import CarNameAnimated from '@/components/CarNameAnimated';
 import CarListItem from '@/components/CarListItem';
 import ProgressBar from '@/components/ProgressBar';
 import CarModel from '@/interfaces/carInterface';
 import { useGetCars } from '@/query/cars';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Dimensions, FlatList, Image, StyleSheet, Text, View } from 'react-native';
-import Animated, { FadeInRight, FadeOutLeft, interpolate, useAnimatedStyle, useSharedValue, withSpring } from 'react-native-reanimated';
+import Animated, { FadeInRight, FadeOutLeft, FadeInUp, FadeOutDown } from 'react-native-reanimated';
 const queryClient = new QueryClient();
 const { width } = Dimensions.get('window');
 
@@ -69,22 +70,6 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         marginBottom: 10,
         marginHorizontal: 20,
-    },
-    TextLuxeSmall: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        color: '#F23557',
-        marginTop: 30,
-        marginLeft: 20,
-        width: '100%',
-    },
-    TextLuxeBig: {
-        fontSize: 60,
-        fontWeight: 'bold',
-        color: '#F23557',
-        marginTop: 30,
-        marginLeft: 20,
-        width: '100%',
     },
 });
 
@@ -154,13 +139,7 @@ function OurCarsContent() {
                     </View>
                 </View>
 
-                <View>
-                    {car.name.length > 14 ? (
-                        <Text style={styles.TextLuxeSmall}>{car.name}</Text>
-                    ) : (
-                        <Text style={styles.TextLuxeBig}>{car.name}</Text>
-                    )}
-                </View>
+                <CarNameAnimated name={car.name} />
 
                 <View style={styles.trendingSection}>
                     <Text style={styles.trendingTitle}>Nos voitures</Text>
