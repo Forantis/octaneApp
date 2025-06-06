@@ -1,3 +1,4 @@
+import CarPriceAnimated from '@/components/CarPriceAnimated';
 import CarNameAnimated from '@/components/CarNameAnimated';
 import CarListItem from '@/components/CarListItem';
 import ProgressBar from '@/components/ProgressBar';
@@ -86,12 +87,12 @@ function OurCarsContent() {
                 <View style={styles.header}>
                     <Image 
                         source={require('../assets/images/octaneLogo.png')}
-                        style={{ width: 150, height: 150 }}
+                        style={{ width: 200, height: 200, marginTop: 50 }}
                         resizeMode="contain"
                     />
                 </View>
                 <View style={{ alignItems: 'center', marginTop: 50 }}>
-                    <Text style={{ color: '#1c2a48', fontSize: 16 }}>Chargement...</Text>
+                    <Text style={{ color: '#ffffff', fontSize: 16 }}>Chargement...</Text>
                 </View>
             </View>
         );
@@ -139,10 +140,7 @@ function OurCarsContent() {
                         resizeMode="cover"
                     />
                     </Animated.View>
-                    <View style={{ flexDirection: 'row' }}>
-                        <Text style={styles.price}>${car.specs?.dailyPrice ?? 2100}</Text>
-                        <Text style={{ color: '#ccc', fontSize: 16, marginLeft: 4, marginTop: 3 }}>/ jour</Text>
-                    </View>
+                    <CarPriceAnimated price={car.specs?.dailyPrice ?? 2100} stylePrice={styles.price} />
                 </View>
 
                 <CarNameAnimated name={car.name} />
